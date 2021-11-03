@@ -15,5 +15,6 @@ namespace VehicleBreakdownAssistant.Models
         }
         public DbSet<Users> Users { get; set; }
         public DbSet<UserType> UserTypes { get; set; }
+        public DbSet<SecretKeys> SecretKeys { get; set; }
     }
 }

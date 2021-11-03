@@ -2,15 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VehicleBreakdownAssistant.Models;
 
 namespace VehicleBreakdownAssistant.Migrations
 {
     [DbContext(typeof(VehicleBreakdownContext))]
-    partial class UsersContextModelSnapshot : ModelSnapshot
+    [Migration("20211031153418_SecretkeysCreation")]
+    partial class SecretkeysCreation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

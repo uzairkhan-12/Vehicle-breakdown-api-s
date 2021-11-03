@@ -69,9 +69,16 @@ namespace VehicleBreakdownAssistant.Controllers
             else
             {
                 //return Ok(true);
+                var securityKey = Guid.NewGuid().ToString();
+                var secretKeysl = new SecretKeys()
+                {
+                    SecretKey = securityKey,
+                    UserId = user.Id
+                };
+                context.SecretKeys.Add(secretKeysl);
+                context.SaveChanges();
 
                 var from = new MailAddress("noreply@gmail.com");
-
                 var to = new MailAddress(model.EmailAddress);
                 using (MailMessage mm = new MailMessage(from, to))
                 {
@@ -80,10 +87,11 @@ namespace VehicleBreakdownAssistant.Controllers
 
                     var body = "<h2>";
                     body += "<h3>Varify Your Email Address</h3>";
-                    body +="<p>To Varify Your Email Address, use this security code 3259</p>";
+                    body +="<p>To Varify Your Email Address, click on the below link</p>";
+                    //body += "<a target='_blank' href='http://localhost:3000/reset-password/" + securityKey+"'>here</a>";
+                    body += string.Format(@"<a href='http://localhost:3000/reset-password/{0}'>Here</a>", securityKey);
                     body += "<p> If you dont request this code,you can safely ignore this email </p>";
                     body += "<p> Someone else might have typed your email address by mistake</p>";
-                    body += "<br/>";
                     body += "<h4> Thanks,</h4>";
                     body += "<h4> Vehicle Breakdown Assistant</h4>";
                     body += "</h2>";
@@ -100,10 +108,27 @@ namespace VehicleBreakdownAssistant.Controllers
                         smtp.Port = 587;
                         smtp.Send(mm);
                         //       ViewBag.Message = "Email sent.";
-                        return Ok("email sent");
+                        return Ok(true);
                     }
                 }
             }
+        }
+
+        [HttpPost]
+        [Route("update-password")]
+        public IActionResult updatePassword([FromBody] ResetPasswordViewModel resetPasswordViewModel)
+        {
+            var secretKey = context.SecretKeys.FirstOrDefault(x => x.SecretKey == resetPasswordViewModel.key);
+            if(secretKey == null)
+            {
+                return Ok(false);
+            }
+            var user = context.Users.FirstOrDefault(x => x.Id == secretKey.UserId);
+            if (user == null) BadRequest("user does not exist");
+            user.Password = resetPasswordViewModel.newPassword;
+            context.SecretKeys.Remove(secretKey);
+            context.SaveChanges();
+            return Ok(true);
         }
 
         [HttpPost]
